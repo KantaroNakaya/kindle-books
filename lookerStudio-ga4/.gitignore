@@ -1,0 +1,33 @@
+# Kindle本執筆プロジェクト用 .gitignore
+
+# 生成されるファイル
+*.epub
+*.mobi
+*.pdf
+*.docx
+*.html
+
+# スクリーンショット（容量が大きいため）
+screenshots/
+assets/images/
+
+# 一時ファイル
+*.tmp
+*.temp
+*~
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
+
+# エディタ設定
+.vscode/
+.idea/
+
+# バックアップファイル
+*.bak
+*.backup
+
+# 執筆中の一時ファイル
+draft/
+temp/ 
