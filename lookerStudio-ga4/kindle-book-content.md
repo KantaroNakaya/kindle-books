@@ -56,7 +56,7 @@
 
 ### 1-1. LookerStudio って何？
 
-**GoogleAnalytics と SearchConsole のデータを自動レポート化するツール**
+**自動レポート化するツール**
 
 LookerStudio（ルッカー・スタジオ）は、Google が提供する無料のデータビジュアライゼーションツールです。
 
