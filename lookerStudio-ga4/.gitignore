@@ -9,7 +9,7 @@
 
 # スクリーンショット（容量が大きいため）
 screenshots/
-assets/images/
+images/
 
 # 一時ファイル
 *.tmp
