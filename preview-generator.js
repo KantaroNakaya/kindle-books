@@ -87,9 +87,7 @@ function markdownToHtml(markdown) {
         function (match, altText, imagePath) {
             if (checkImageExists(imagePath)) {
                 // 実際の画像ファイルが存在する場合
-                const imageSrc = isInLookerStudioDir
-                    ? imagePath
-                    : `lookerStudio-ga4/${imagePath}`;
+                const imageSrc = imagePath; // 常に相対パスを使用
                 return `<div class="image-container">
                     <img src="${imageSrc}" alt="${altText}" class="book-image" />
                     <div class="image-caption">${altText}</div>
