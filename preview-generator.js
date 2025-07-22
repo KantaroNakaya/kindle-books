@@ -1,21 +1,21 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
 // 現在のディレクトリを確認して、適切なパスを設定
 const currentDir = process.cwd();
-const isInLookerStudioDir = currentDir.includes("lookerStudio-ga4");
+const isInLookerStudioDir = currentDir.includes('lookerStudio-ga4');
 
 // Markdownファイルのパスを設定
 const markdownPath = isInLookerStudioDir
-    ? "kindle-book-content.md"
-    : "lookerStudio-ga4/kindle-book-content.md";
+    ? 'kindle-book-content.md'
+    : 'lookerStudio-ga4/kindle-book-content.md';
 
 // Markdownファイルを読み込み
-const markdownContent = fs.readFileSync(markdownPath, "utf8");
+const markdownContent = fs.readFileSync(markdownPath, 'utf8');
 
 // 画像ファイルの存在確認
 function checkImageExists(imagePath) {
-    const baseDir = isInLookerStudioDir ? "." : "lookerStudio-ga4";
+    const baseDir = isInLookerStudioDir ? '.' : 'lookerStudio-ga4';
     const fullPath = path.join(currentDir, baseDir, imagePath);
     return fs.existsSync(fullPath);
 }
@@ -25,61 +25,43 @@ function markdownToHtml(markdown) {
     let html = markdown;
 
     // 見出しの変換（####と#####にも対応）
-    html = html.replace(/^##### (.*$)/gim, "<h5>$1</h5>");
-    html = html.replace(/^#### (.*$)/gim, "<h4>$1</h4>");
-    html = html.replace(/^### (.*$)/gim, "<h3>$1</h3>");
-    html = html.replace(/^## (.*$)/gim, "<h2>$1</h2>");
-    html = html.replace(/^# (.*$)/gim, "<h1>$1</h1>");
+    html = html.replace(/^##### (.*$)/gim, '<h5>$1</h5>');
+    html = html.replace(/^#### (.*$)/gim, '<h4>$1</h4>');
+    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+    html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+    html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
 
     // 太字
-    html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
     // 斜体
-    html = html.replace(/\*(.*?)\*/g, "<em>$1</em>");
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
 
     // 目次部分の特別処理（修正版）
     html = html.replace(
         /## 目次\n\n((?:- \[.*?\]\(.*?\)\n?)+)/g,
         function (match, tocContent) {
             const tocItems = tocContent
-                .split("\n")
+                .split('\n')
                 .filter((line) => line.trim());
             const tocHtml = tocItems
                 .map((item, index) => {
                     const chapterTitle = item.replace(
                         /^- \[(.*?)\]\(.*?\)$/,
-                        "$1"
+                        '$1'
                     );
                     return `<li class="toc-item"><span class="toc-number">${
                         index + 1
                     }.</span> <span class="toc-title">${chapterTitle}</span></li>`;
                 })
-                .join("");
+                .join('');
             return (
                 '<h2>目次</h2>\n<div class="toc-container">\n<ol class="toc-list">' +
                 tocHtml +
-                "</ol>\n</div>"
+                '</ol>\n</div>'
             );
         }
     );
-
-    // 通常のリスト
-    html = html.replace(/^- (.*$)/gim, "<li>$1</li>");
-
-    // 連続するliタグをulで囲む
-    html = html.replace(/(<li>.*?<\/li>)(?=\s*<li>)/gs, function (match) {
-        return match.replace(/<\/li>\s*<li>/g, "</li>\n<li>");
-    });
-    html = html.replace(/(<li>.*?<\/li>)/s, function (match) {
-        if (match.includes("</li>\n<li>")) {
-            return "<ul>" + match + "</ul>";
-        }
-        return match;
-    });
-
-    // 段落
-    html = html.replace(/\n\n/g, "</p><p>");
-    html = "<p>" + html + "</p>";
 
     // 画像の処理（改良版）
     html = html.replace(
@@ -103,8 +85,121 @@ function markdownToHtml(markdown) {
         }
     );
 
+    // 画像の説明文を処理（_で囲まれたテキスト）
+    html = html.replace(/_([^_]+)_/g, '<p class="image-description">$1</p>');
+
     // コードブロック
-    html = html.replace(/```(.*?)```/gs, "<pre><code>$1</code></pre>");
+    html = html.replace(/```(.*?)```/gs, '<pre><code>$1</code></pre>');
+
+    // リストの処理を改善
+    // まず、リストアイテムを一時的にマーク
+    html = html.replace(/^- (.*$)/gim, '<!--LIST_ITEM-->$1<!--/LIST_ITEM-->');
+
+    // 連続するリストアイテムをulで囲む
+    html = html.replace(
+        /(<!--LIST_ITEM-->.*?<!--\/LIST_ITEM-->)(?:\s*(<!--LIST_ITEM-->.*?<!--\/LIST_ITEM-->))*/gs,
+        function (match) {
+            const items = match.match(
+                /<!--LIST_ITEM-->(.*?)<!--\/LIST_ITEM-->/gs
+            );
+            if (items && items.length > 0) {
+                const listItems = items
+                    .map((item) =>
+                        item.replace(
+                            /<!--LIST_ITEM-->(.*?)<!--\/LIST_ITEM-->/s,
+                            '<li>$1</li>'
+                        )
+                    )
+                    .join('');
+                return `<ul>${listItems}</ul>`;
+            }
+            return match;
+        }
+    );
+
+    // 段落の処理を改善
+    // 空行で区切られたテキストブロックを段落に変換
+    const lines = html.split('\n');
+    const processedLines = [];
+    let currentParagraph = [];
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+
+        // 既にHTMLタグが含まれている行はそのまま
+        if (line.match(/^<(h[1-6]|ul|ol|div|pre|p)/)) {
+            // 現在の段落があれば処理
+            if (currentParagraph.length > 0) {
+                const paragraphText = currentParagraph.join(' ').trim();
+                if (paragraphText) {
+                    processedLines.push(`<p>${paragraphText}</p>`);
+                }
+                currentParagraph = [];
+            }
+            processedLines.push(line);
+        }
+        // 空行の場合
+        else if (line === '') {
+            // 現在の段落があれば処理
+            if (currentParagraph.length > 0) {
+                const paragraphText = currentParagraph.join(' ').trim();
+                if (paragraphText) {
+                    processedLines.push(`<p>${paragraphText}</p>`);
+                }
+                currentParagraph = [];
+            }
+        }
+        // 通常のテキスト行
+        else {
+            currentParagraph.push(line);
+        }
+    }
+
+    // 最後の段落を処理
+    if (currentParagraph.length > 0) {
+        const paragraphText = currentParagraph.join(' ').trim();
+        if (paragraphText) {
+            processedLines.push(`<p>${paragraphText}</p>`);
+        }
+    }
+
+    html = processedLines.join('\n');
+
+    // 不要な空の段落タグを削除
+    html = html.replace(/<p>\s*<\/p>/g, '');
+
+    // 画像コンテナ内の不要な段落タグを削除
+    html = html.replace(
+        /<div class="image-container">\s*<p>/g,
+        '<div class="image-container">'
+    );
+    html = html.replace(
+        /<\/p>\s*<div class="image-caption">/g,
+        '<div class="image-caption">'
+    );
+    html = html.replace(
+        /<div class="image-placeholder">\s*<p>/g,
+        '<div class="image-placeholder">'
+    );
+    html = html.replace(
+        /<\/p>\s*<div class="placeholder-icon">/g,
+        '<div class="placeholder-icon">'
+    );
+
+    // 画像後の不正なHTMLタグを修正
+    html = html.replace(/<p><\/div>/g, '</div>');
+    html = html.replace(/<p><\/div>/g, '</div>');
+    html = html.replace(/<\/div>\s*<p>/g, '</div><p>');
+
+    // 画像説明文の位置を調整
+    html = html.replace(
+        /<\/div>\s*<p class="image-description">/g,
+        '</div>\n<p class="image-description">'
+    );
+
+    // 画像コンテナ後の不正なHTMLタグを修正
+    html = html.replace(/<\/div><\/p>/g, '</div>');
+    html = html.replace(/<\/div>\s*<\/p>/g, '</div>');
 
     return html;
 }
@@ -240,6 +335,17 @@ const htmlTemplate = `
             font-style: italic;
             text-align: center;
         }
+        .image-description {
+            margin-top: 15px;
+            font-size: 0.95em;
+            color: #495057;
+            font-style: italic;
+            text-align: center;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+        }
         .image-placeholder {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border: 2px dashed #bdc3c7;
@@ -337,11 +443,11 @@ const htmlTemplate = `
 
 // HTMLファイルを生成
 const outputPath = isInLookerStudioDir
-    ? "kindle-preview.html"
-    : "lookerStudio-ga4/kindle-preview.html";
+    ? 'kindle-preview.html'
+    : 'lookerStudio-ga4/kindle-preview.html';
 fs.writeFileSync(outputPath, htmlTemplate);
-console.log("✅ Kindle本プレビューを生成しました: " + outputPath);
+console.log('✅ Kindle本プレビューを生成しました: ' + outputPath);
 console.log(
-    "📖 ブラウザで " + outputPath + " を開いてプレビューを確認してください"
+    '📖 ブラウザで ' + outputPath + ' を開いてプレビューを確認してください'
 );
-console.log("🖼️ 画像ファイルが存在する場合は実際の画像が表示されます");
+console.log('🖼️ 画像ファイルが存在する場合は実際の画像が表示されます');
