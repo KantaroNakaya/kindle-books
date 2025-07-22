@@ -91,8 +91,11 @@ function markdownToHtml(markdown) {
     html = html.replace(/```(.*?)```/gs, '<pre><code>$1</code></pre>');
 
     // リストの処理を改善
-    // まず、リストアイテムを一時的にマーク
-    html = html.replace(/^- (.*$)/gim, '<!--LIST_ITEM-->$1<!--/LIST_ITEM-->');
+    // まず、リストアイテムを一時的にマーク（インデントも含む）
+    html = html.replace(/^(\s*)- (.*$)/gim, function (match, spaces, content) {
+        const indentLevel = Math.floor(spaces.length / 2); // 2スペース = 1レベル
+        return `<!--LIST_ITEM:${indentLevel}-->${content}<!--/LIST_ITEM-->`;
+    });
 
     // 番号付きリストを処理
     html = html.replace(
@@ -100,21 +103,25 @@ function markdownToHtml(markdown) {
         '<!--ORDERED_LIST_ITEM-->$1<!--/ORDERED_LIST_ITEM-->$2<!--/ORDERED_LIST_ITEM_CONTENT-->'
     );
 
-    // 連続するリストアイテムをulで囲む
+    // 連続するリストアイテムをulで囲む（ネスト対応）
     html = html.replace(
-        /(<!--LIST_ITEM-->.*?<!--\/LIST_ITEM-->)(?:\s*(<!--LIST_ITEM-->.*?<!--\/LIST_ITEM-->))*/gs,
+        /(<!--LIST_ITEM:\d+-->.*?<!--\/LIST_ITEM-->)(?:\s*(<!--LIST_ITEM:\d+-->.*?<!--\/LIST_ITEM-->))*/gs,
         function (match) {
             const items = match.match(
-                /<!--LIST_ITEM-->(.*?)<!--\/LIST_ITEM-->/gs
+                /<!--LIST_ITEM:(\d+)-->(.*?)<!--\/LIST_ITEM-->/gs
             );
             if (items && items.length > 0) {
                 const listItems = items
-                    .map((item) =>
-                        item.replace(
-                            /<!--LIST_ITEM-->(.*?)<!--\/LIST_ITEM-->/s,
-                            '<li>$1</li>'
-                        )
-                    )
+                    .map((item) => {
+                        const parts = item.match(
+                            /<!--LIST_ITEM:(\d+)-->(.*?)<!--\/LIST_ITEM-->/s
+                        );
+                        const indentLevel = parseInt(parts[1]);
+                        const content = parts[2];
+                        return `<li style="margin-left: ${
+                            indentLevel * 20
+                        }px">${content}</li>`;
+                    })
                     .join('');
                 return `<ul>${listItems}</ul>`;
             }
