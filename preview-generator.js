@@ -72,7 +72,6 @@ function markdownToHtml(markdown) {
                 const imageSrc = imagePath; // 常に相対パスを使用
                 return `<div class="image-container">
                     <img src="${imageSrc}" alt="${altText}" class="book-image" />
-                    <div class="image-caption">${altText}</div>
                 </div>`;
             } else {
                 // 画像ファイルが存在しない場合
@@ -200,10 +199,6 @@ function markdownToHtml(markdown) {
     html = html.replace(
         /<div class="image-container">\s*<p>/g,
         '<div class="image-container">'
-    );
-    html = html.replace(
-        /<\/p>\s*<div class="image-caption">/g,
-        '<div class="image-caption">'
     );
     html = html.replace(
         /<div class="image-placeholder">\s*<p>/g,
@@ -355,13 +350,6 @@ const htmlTemplate = `
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             border: 1px solid #e9ecef;
-        }
-        .image-caption {
-            margin-top: 10px;
-            font-size: 0.9em;
-            color: #6c757d;
-            font-style: italic;
-            text-align: center;
         }
         .image-description {
             margin-top: 15px;
