@@ -95,6 +95,12 @@ function markdownToHtml(markdown) {
     // まず、リストアイテムを一時的にマーク
     html = html.replace(/^- (.*$)/gim, '<!--LIST_ITEM-->$1<!--/LIST_ITEM-->');
 
+    // 番号付きリストを処理
+    html = html.replace(
+        /^(\d+)\.\s+(.*$)/gim,
+        '<!--ORDERED_LIST_ITEM-->$1<!--/ORDERED_LIST_ITEM-->$2<!--/ORDERED_LIST_ITEM_CONTENT-->'
+    );
+
     // 連続するリストアイテムをulで囲む
     html = html.replace(
         /(<!--LIST_ITEM-->.*?<!--\/LIST_ITEM-->)(?:\s*(<!--LIST_ITEM-->.*?<!--\/LIST_ITEM-->))*/gs,
@@ -112,6 +118,28 @@ function markdownToHtml(markdown) {
                     )
                     .join('');
                 return `<ul>${listItems}</ul>`;
+            }
+            return match;
+        }
+    );
+
+    // 連続する番号付きリストアイテムをolで囲む
+    html = html.replace(
+        /(<!--ORDERED_LIST_ITEM-->.*?<!--\/ORDERED_LIST_ITEM_CONTENT-->)(?:\s*(<!--ORDERED_LIST_ITEM-->.*?<!--\/ORDERED_LIST_ITEM_CONTENT-->))*/gs,
+        function (match) {
+            const items = match.match(
+                /<!--ORDERED_LIST_ITEM-->(\d+)<!--\/ORDERED_LIST_ITEM-->(.*?)<!--\/ORDERED_LIST_ITEM_CONTENT-->/gs
+            );
+            if (items && items.length > 0) {
+                const listItems = items
+                    .map((item) => {
+                        const parts = item.match(
+                            /<!--ORDERED_LIST_ITEM-->(\d+)<!--\/ORDERED_LIST_ITEM-->(.*?)<!--\/ORDERED_LIST_ITEM_CONTENT-->/s
+                        );
+                        return `<li value="${parts[1]}">${parts[2]}</li>`;
+                    })
+                    .join('');
+                return `<ol>${listItems}</ol>`;
             }
             return match;
         }
