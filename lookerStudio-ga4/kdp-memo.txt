@@ -1,0 +1,23 @@
+#本のタイトル
+
+##タイトル
+縦スクロールでパパッと学ぶ！LookerStudio 導入書
+
+##カタカナでのフリガナ
+タテスクロールデパパットマナブ ルッカースタジオドウニュウショ
+
+##ローマ字でのフリガナ
+Tate sukurooru de papatto manabu LookerStudio dounyuusho
+
+#著者
+
+##主な著者等
+さといも
+サトイモ
+SATOIMO
+
+##内容紹介
+仮
+
+##カテゴリ
+Kindle本 › Kindle本 › ビジネス・経済 › スキル › 業務自動化
