@@ -1,13 +1,15 @@
 const fs = require('fs');
 const path = require('path');
-const { getMarkdownPath } = require('./pathUtils');
+const { isInLookerStudioDir } = require('./pathUtils');
 
 /**
  * EPUB出力ディレクトリのパスを取得
  * @returns {string}
  */
 function getEpubOutputDir() {
-    return 'epub-output';
+    return isInLookerStudioDir()
+        ? 'epub-output'
+        : 'lookerStudio-ga4/epub-output';
 }
 
 /**
@@ -15,7 +17,9 @@ function getEpubOutputDir() {
  * @returns {string}
  */
 function getEpubOutputPath() {
-    return 'kindle-book.epub';
+    return isInLookerStudioDir()
+        ? 'kindle-book.epub'
+        : 'lookerStudio-ga4/kindle-book.epub';
 }
 
 /**

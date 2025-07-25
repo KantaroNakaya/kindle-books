@@ -130,9 +130,9 @@ kindle-books/
 ### ファイル配置
 
 -   Markdown ファイル: `lookerStudio-ga4/kindle-book-content.md`
--   HTML 出力: `kindle-preview.html`
--   EPUB 出力: `kindle-book.epub`
--   一時ファイル: `epub-output/`
+-   HTML 出力: `lookerStudio-ga4/kindle-preview.html`
+-   EPUB 出力: `lookerStudio-ga4/kindle-book.epub`
+-   一時ファイル: `lookerStudio-ga4/epub-output/`
 
 ## 📝 注意事項
 
