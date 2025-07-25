@@ -102,11 +102,11 @@ function generateContentOpf(title, author, chapters) {
     const manifestItems = [];
     const spineItems = [];
 
-    // ナビゲーションファイルを追加
+    // ナビゲーションファイルを追加（manifestのみ、spineには含めない）
     manifestItems.push(
         '<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>'
     );
-    spineItems.push('<itemref idref="nav"/>');
+    // spineItems.push('<itemref idref="nav"/>'); // この行を削除
 
     // 各章を追加
     chapters.forEach((chapter, index) => {
