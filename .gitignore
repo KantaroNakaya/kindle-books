@@ -1,1 +1,49 @@
+# Kindle本執筆プロジェクト用 .gitignore
+
+# 生成されるファイル
+*.epub
+*.mobi
+*.pdf
+*.docx
+*.html
+
+# EPUB生成時の一時ファイル
+epub-output/
+
+# スクリーンショット（容量が大きいため）
+screenshots/
+images/
+
+# 一時ファイル
+*.tmp
+*.temp
+*~
+
+# OS生成ファイル
 .DS_Store
+Thumbs.db
+
+# エディタ設定
+.vscode/
+.idea/
+
+# バックアップファイル
+*.bak
+*.backup
+
+# 執筆中の一時ファイル
+draft/
+temp/
+
+# Node.js関連
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 環境変数ファイル
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

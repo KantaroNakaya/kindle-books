@@ -1,8 +1,8 @@
 # Kindle 本プレビューツール
 
-このツールは、Markdown ファイルを Kindle 本形式でプレビューするためのツールです。
+このツールは、Markdown ファイルを Kindle 本形式でプレビューし、EPUB ファイルを生成するためのツールです。
 
-## 📖 プレビュー方法
+## 📖 使用方法
 
 ### 1. HTML プレビュー（推奨）
 
@@ -11,6 +11,8 @@
 ```bash
 # HTMLプレビューを生成
 node preview-generator.js
+# または
+npm run preview
 
 # ブラウザでプレビューを開く
 open kindle-preview.html
@@ -23,46 +25,60 @@ open kindle-preview.html
 -   目次が正しくリスト表示される
 -   Kindle 本の特徴を説明する情報ボックス付き
 
-### 2. EPUB プレビュー
+### 2. EPUB 生成
 
-より本格的な電子書籍形式でのプレビューです。
+実際の電子書籍形式の EPUB ファイルを生成します。
 
 ```bash
-# EPUBプレビューを生成
-node epub-preview-generator.js
+# 依存関係をインストール（初回のみ）
+npm install
 
-# macOSの場合：Booksアプリで開く
-# フォルダを右クリック → "このアプリケーションで開く" → "Books"を選択
+# EPUBファイルを生成
+node epub-generator.js
+# または
+npm run epub
+
+# 生成されたEPUBファイルを確認
+open kindle-book.epub
 ```
 
 **特徴：**
 
--   実際の電子書籍形式
+-   実際の電子書籍形式（EPUB）
 -   章ごとに分割された構造
 -   目次からのジャンプ機能
--   フォントサイズ調整可能
+-   日本語フォント対応
+-   Kindle や EPUB リーダーで直接開ける
 
-### 3. PDF プレビュー
+### 3. 一括生成
 
-印刷版としてのプレビューです。
+HTML プレビューと EPUB ファイルを同時に生成します。
 
 ```bash
-# Puppeteerをインストール（初回のみ）
-npm install puppeteer
-
-# PDFプレビューを生成
-node pdf-preview-generator.js
-
-# PDFファイルを開く
-open kindle-preview.pdf
+npm run build
 ```
 
-**特徴：**
+## 🏗️ プロジェクト構造
 
--   印刷版としての確認
--   ページ番号付き
--   ヘッダー・フッター付き
--   A4 サイズ最適化
+```
+kindle-books/
+├── src/
+│   ├── utils/
+│   │   ├── pathUtils.js      # パス管理ユーティリティ
+│   │   ├── fileUtils.js      # ファイル操作ユーティリティ
+│   │   └── epubUtils.js      # EPUB生成用ユーティリティ
+│   ├── converters/
+│   │   ├── markdownConverter.js  # Markdown→HTML変換
+│   │   └── epubConverter.js      # EPUB生成用コンバーター
+│   ├── templates/
+│   │   └── htmlTemplate.js   # HTMLテンプレート
+│   └── styles/
+│       └── epub.css          # EPUB用スタイルシート
+├── preview-generator.js      # HTMLプレビュー生成
+├── epub-generator.js         # EPUBファイル生成
+├── package.json              # 依存関係管理
+└── README.md                 # このファイル
+```
 
 ## 📱 Kindle 本の特徴
 
@@ -99,42 +115,28 @@ open kindle-preview.pdf
 3. **画像の確認**：画像が適切に表示されるか
 4. **レイアウトの確認**：モバイルでの表示確認
 
-## 🔧 カスタマイズ
+## 🔧 技術仕様
 
-### スタイルの変更
+### 対応形式
 
-`preview-generator.js`の CSS 部分を編集することで、デザインをカスタマイズできます：
+-   **入力**: Markdown (.md)
+-   **出力**: HTML (.html), EPUB (.epub)
 
-```css
-// フォントの変更
-font-family: "Your Font", sans-serif;
+### 依存関係
 
-// 色の変更
-color: #your-color;
+-   Node.js 14.0.0 以上
+-   archiver (EPUB 生成用)
 
-// レイアウトの変更
-max-width: 900px; // 幅の調整
-```
+### ファイル配置
 
-### 新しいプレビュー形式の追加
-
-新しいプレビュー形式を追加する場合は、新しい JavaScript ファイルを作成し、Markdown ファイルを適切な形式に変換してください。
+-   Markdown ファイル: `lookerStudio-ga4/kindle-book-content.md`
+-   HTML 出力: `kindle-preview.html`
+-   EPUB 出力: `kindle-book.epub`
+-   一時ファイル: `epub-output/`
 
 ## 📝 注意事項
 
--   画像は現在プレースホルダーとして表示されています
--   実際の Kindle 本では、画像を適切に配置する必要があります
--   リンクは現在機能しません（プレビュー用）
--   実際の出版時は、Kindle Direct Publishing のガイドラインに従ってください
-
-## 🚀 次のステップ
-
-1. **プレビューで確認**：HTML プレビューで全体の構成を確認
-2. **内容の調整**：必要に応じて Markdown ファイルを編集
-3. **画像の追加**：実際の画像ファイルを準備
-4. **最終チェック**：PDF プレビューで印刷版を確認
-5. **出版準備**：Kindle Direct Publishing での出版準備
-
----
-
-**💡 ヒント：** プレビューを定期的に確認しながら執筆することで、読みやすい Kindle 本を作成できます。
+1. **画像ファイル**: 画像は相対パスで指定し、Markdown ファイルと同じディレクトリに配置してください
+2. **文字エンコーディング**: UTF-8 で保存してください
+3. **EPUB ファイル**: 生成された EPUB ファイルは標準的な EPUB リーダーで開けます
+4. **一時ファイル**: `epub-output/`ディレクトリは自動生成されますが、手動で削除しても問題ありません
