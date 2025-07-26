@@ -6,11 +6,13 @@ subtitle: 'レポートの更新を自動化させよう'
 lang: 'ja-JP'
 dir: 'ltr'
 output:
-    custom_document:
-        path: 'lookerstudio-introduction.epub'
+    epub_document:
+        toc: true
+        toc_depth: 3
+        number_sections: true
+        css: null
+        highlight: tango
         pandoc_args:
-            - '--css=.crossnote/style.less'
-            - '--highlight-style=tango'
             - '--mathml'
             - '--standalone'
 ---
