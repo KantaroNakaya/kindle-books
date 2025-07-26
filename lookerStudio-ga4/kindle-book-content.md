@@ -476,11 +476,14 @@ _図 2-5: LookerStudio の初期画面とメニューの説明。直感的なイ
     - 「Google Analytics」を選択
     - GA4 プロパティの一覧が表示される
 
+![データソース追加の手順](images/chapter2/data-source-addition01.png)
+_図 2-6: データソースを追加する手順をスクリーンショットで説明。GA4 プロパティを選択してデータを連携します。_
+
 3. **プロパティの選択**
     - 利用可能な GA4 プロパティから選択
     - 「追加」ボタンをクリック
 
-![データソース追加の手順](images/chapter2/data-source-addition.png)
+![データソース追加の手順](images/chapter2/data-source-addition02.jpg)
 _図 2-6: データソースを追加する手順をスクリーンショットで説明。GA4 プロパティを選択してデータを連携します。_
 
 #### 2-1-3. 認証と権限設定
@@ -500,7 +503,7 @@ _図 2-6: データソースを追加する手順をスクリーンショット�
     - GA4 の管理者に権限を依頼
     - または、適切な権限を持つプロパティを使用
 
-![認証と権限設定画面](images/chapter2/authentication-permissions.png)
+![認証と権限設定画面](images/chapter2/authentication-permissions.jpg)
 _図 2-7: 認証プロセスと権限設定の画面。適切な権限設定がデータ連携の成功の鍵です。_
 
 #### 2-1-4. データソースの設定
